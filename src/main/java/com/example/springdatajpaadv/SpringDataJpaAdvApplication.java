@@ -28,6 +28,12 @@ public class SpringDataJpaAdvApplication {
                                     .age(21)
                                     .build(),
                             Student.builder()
+                                    .firstName("Maria")
+                                    .lastName("Jones")
+                                    .email("maria2.jones@amigoscode.edu")
+                                    .age(25)
+                                    .build(),
+                            Student.builder()
                                     .firstName("Ahmed")
                                     .lastName("Ali")
                                     .email("ahmed.ali@amigoscode.edu")
@@ -35,35 +41,42 @@ public class SpringDataJpaAdvApplication {
                                     .build()
 
                     ));
-            System.out.println("Adding Maria and Ahmed");
-
-            System.out.print("Number of students: ");
-            System.out.println(studentRepository.count());
 
             studentRepository
-                    .findById(2L)
+                    .findByEmail("ahmed.ali@amigoscode.edu")
                     .ifPresentOrElse(
                             System.out::println,
-                            () -> System.out.println("Student with ID 2 not found")
+                            () -> System.out.println("Student with Email: 'ahmed.ali@amigoscode.edu' not found")
             );
 
+            /* Normal JPA */
+            System.out.println("1. Normal JPA");
             studentRepository
-                    .findById(3L)
-                    .ifPresentOrElse(
-                            System.out::println,
-                            () -> System.out.println("Student with ID 3 not found")
-            );
-
-            System.out.println("Select all students");
-            studentRepository
-                    .findAll()
+                    .findByFirstNameAndAgeGreaterThanEqual("Maria", 21)
                     .forEach(System.out::println);
 
-            System.out.println("Delete Maria");
-            studentRepository.deleteById(1L);
+            /* Custom JPQL */
+            System.out.println("2. Custom JPQL");
+            studentRepository
+                    .findByCustomJPQL("Maria", 21)
+                    .forEach(System.out::println);
 
-            System.out.print("Number of students: ");
-            System.out.println(studentRepository.count());
+            /* Native SQL */
+            System.out.println("3. Native SQL");
+            studentRepository
+                    .findByNativeSQL("Maria", 21)
+                    .forEach(System.out::println);
+
+            /* Native SQL Param */
+            System.out.println("4. Native SQL Param");
+            studentRepository
+                    .findByNativeParams(21, "Maria")
+                    .forEach(System.out::println);
+
+            System.out.println("Delete one");
+            System.out.println(
+                    studentRepository.deleteOneById(2L)
+            );
         };
     }
 

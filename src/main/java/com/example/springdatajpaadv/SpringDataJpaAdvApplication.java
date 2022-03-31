@@ -7,6 +7,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
@@ -83,12 +85,24 @@ public class SpringDataJpaAdvApplication {
             /* Fake data for test */
             createRandomData(studentRepository);
 
+            /* Sorting */
             Sort sort = Sort.by("firstName").ascending()
                     .and(Sort.by("age").descending());
 
             studentRepository
                     .findAll(sort)
                     .forEach(s -> System.out.println(s.getFirstName() + " " + s.getAge()));
+
+            /* Paging */
+            PageRequest pageRequest = PageRequest.of(
+                    1,
+                    5,
+                    sort
+            );
+
+            Page<Student> page = studentRepository
+                    .findAll(pageRequest);
+            System.out.println(page);
         };
     }
 

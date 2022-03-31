@@ -102,7 +102,7 @@ public class SpringDataJpaAdvApplication {
 
             Page<Student> page = studentRepository
                     .findAll(pageRequest);
-            System.out.println(page);
+            page.forEach(System.out::println);
         };
     }
 

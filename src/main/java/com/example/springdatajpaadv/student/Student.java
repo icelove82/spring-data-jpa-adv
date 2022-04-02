@@ -1,5 +1,6 @@
 package com.example.springdatajpaadv.student;
 
+import com.example.springdatajpaadv.card.StudentIdCard;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,7 +15,7 @@ import javax.persistence.*;
         name = "student",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "student_email_unique",
+                        name = "student_email_uk",
                         columnNames = "email"
                 )
         }
@@ -63,4 +64,10 @@ public class Student {
             nullable = false
     )
     private Integer age;
+
+    @OneToOne(
+            mappedBy = "student",
+            orphanRemoval = true
+    )
+    private StudentIdCard studentIdCard;
 }

@@ -1,11 +1,14 @@
 package com.example.springdatajpaadv.student;
 
+import com.example.springdatajpaadv.book.Book;
 import com.example.springdatajpaadv.card.StudentIdCard;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
+@Setter
 @Builder
 @ToString
 @NoArgsConstructor
@@ -65,9 +68,21 @@ public class Student {
     )
     private Integer age;
 
+    /* BiDirection relationship 1:1 */
     @OneToOne(
             mappedBy = "student",
-            orphanRemoval = true
+            orphanRemoval = true,
+            cascade = CascadeType.ALL
     )
     private StudentIdCard studentIdCard;
+
+    /* BiDirection relationship 1:m */
+    @OneToMany(
+            mappedBy = "student",
+            orphanRemoval = true,
+            cascade = CascadeType.ALL,
+            /* LAZY - query with no join Book, but select when call Student.getBooks() */
+            fetch = FetchType.EAGER
+    )
+    private List<Book> books;
 }

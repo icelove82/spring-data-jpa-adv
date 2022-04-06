@@ -1,5 +1,7 @@
 package com.example.springdatajpaadv;
 
+import com.example.springdatajpaadv.book.Book;
+import com.example.springdatajpaadv.book.BookRepository;
 import com.example.springdatajpaadv.card.StudentIdCard;
 import com.example.springdatajpaadv.card.StudentIdCardRepository;
 import com.example.springdatajpaadv.student.Student;
@@ -12,7 +14,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @SpringBootApplication
@@ -25,16 +29,20 @@ public class SpringDataJpaAdvApplication {
     @Bean
     CommandLineRunner commandLineRunner(
             StudentRepository studentRepository,
-            StudentIdCardRepository cardRepository) {
+            StudentIdCardRepository cardRepository,
+            BookRepository bookRepository) {
 
         return args -> {
             // 1
-            basicJpaAction(studentRepository);
+//            basicJpaAction(studentRepository);
+//
+//            // 2
+//            sortPagingJpaAction(studentRepository);
+//
+//            // 3
+//            OneToOneAction(studentRepository, cardRepository);
 
-            // 2
-            sortPagingJpaAction(studentRepository);
-
-            // 3
+            // 4
             Faker faker = new Faker();
 
             String firstName = faker.name().firstName();
@@ -42,27 +50,100 @@ public class SpringDataJpaAdvApplication {
             String email = String.format("%s.%s@amigoscode.edu", firstName, lastName);
             Integer age = faker.number().numberBetween(17, 55);
 
-            cardRepository.save(
-                    StudentIdCard.builder()
-                            .cardNumber("123456789")
-                            .student(Student.builder()
-                                    .firstName(firstName)
-                                    .lastName(lastName)
-                                    .email(email)
-                                    .age(age)
-                                    .build())
+            Student s = Student.builder()
+                    .firstName(firstName)
+                    .lastName(lastName)
+                    .email(email)
+                    .age(age)
+                    .build();
+
+            // book1
+            Book b1 = Book.builder()
+                    .bookName("Clean Code")
+                    .createAt(LocalDateTime.now())
+                    .student(s)
+                    .build();
+
+            // book2
+            Book b2 = Book.builder()
+                    .bookName("Think and Grow Rich")
+                    .createAt(LocalDateTime.now().minusDays(3))
+                    .student(s)
+                    .build();
+
+            // book3
+            Book b3 = Book.builder()
+                    .bookName("Spring Data JPA")
+                    .createAt(LocalDateTime.now().minusYears(1))
+                    .student(s)
+                    .build();
+
+            s.setBooks(List.of(b1, b2, b3));
+
+            s.setStudentIdCard(StudentIdCard.builder()
+                    .cardNumber("888888888")
+                    .student(s)
+                    .build());
+
+            studentRepository.save(
+                    s
+            );
+
+            bookRepository.save(
+                    Book.builder()
+                            .bookName("YUN")
+                            .createAt(LocalDateTime.now())
+                            .student(
+                                    Student.builder()
+                                            .firstName("Yun")
+                                            .lastName("Myeonghun")
+                                            .email("yun.myeonghun@gmail.com")
+                                            .age(40)
+                                            .build()
+                            )
                             .build()
             );
 
-            cardRepository.findById(1L)
-                    .ifPresent(System.out::println);
-
-            studentRepository.findById(1L)
-                    .ifPresent(System.out::println);
-
-            studentRepository.deleteById(24L);
+            studentRepository
+                    .findAll()
+                    .forEach(
+                            student -> {
+                                student.getBooks().forEach(book -> {
+                                    System.out.println(student.getFirstName() + " -- " + book.getBookName());
+                                });
+                            }
+                    );
 
         };
+    }
+
+    private void OneToOneAction(StudentRepository studentRepository, StudentIdCardRepository cardRepository) {
+        Faker faker = new Faker();
+
+        String firstName = faker.name().firstName();
+        String lastName = faker.name().lastName();
+        String email = String.format("%s.%s@amigoscode.edu", firstName, lastName);
+        Integer age = faker.number().numberBetween(17, 55);
+
+        cardRepository.save(
+                StudentIdCard.builder()
+                        .cardNumber("123456789")
+                        .student(Student.builder()
+                                .firstName(firstName)
+                                .lastName(lastName)
+                                .email(email)
+                                .age(age)
+                                .build())
+                        .build()
+        );
+
+        cardRepository.findById(1L)
+                .ifPresent(System.out::println);
+
+        studentRepository.findById(1L)
+                .ifPresent(System.out::println);
+
+        studentRepository.deleteById(24L);
     }
 
     private void sortPagingJpaAction(StudentRepository studentRepository) {

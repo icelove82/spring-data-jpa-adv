@@ -4,6 +4,9 @@ import com.example.springdatajpaadv.book.Book;
 import com.example.springdatajpaadv.book.BookRepository;
 import com.example.springdatajpaadv.card.StudentIdCard;
 import com.example.springdatajpaadv.card.StudentIdCardRepository;
+import com.example.springdatajpaadv.course.Course;
+import com.example.springdatajpaadv.enrolment.Enrolment;
+import com.example.springdatajpaadv.enrolment.EnrolmentId;
 import com.example.springdatajpaadv.student.Student;
 import com.example.springdatajpaadv.student.StudentRepository;
 import com.github.javafaker.Faker;
@@ -14,7 +17,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,88 +35,177 @@ public class SpringDataJpaAdvApplication {
             BookRepository bookRepository) {
 
         return args -> {
+
+            /*
+
             // 1
-//            basicJpaAction(studentRepository);
-//
-//            // 2
-//            sortPagingJpaAction(studentRepository);
-//
-//            // 3
-//            OneToOneAction(studentRepository, cardRepository);
+            basicJpaAction(studentRepository);
+
+            // 2
+            sortPagingJpaAction(studentRepository);
+
+            // 3
+            OneToOneAction(studentRepository, cardRepository);
 
             // 4
-            Faker faker = new Faker();
+            OneToManyAction(studentRepository, bookRepository);
 
-            String firstName = faker.name().firstName();
-            String lastName = faker.name().lastName();
-            String email = String.format("%s.%s@amigoscode.edu", firstName, lastName);
-            Integer age = faker.number().numberBetween(17, 55);
+            */
 
-            Student s = Student.builder()
-                    .firstName(firstName)
-                    .lastName(lastName)
-                    .email(email)
-                    .age(age)
-                    .build();
-
-            // book1
-            Book b1 = Book.builder()
-                    .bookName("Clean Code")
-                    .createAt(LocalDateTime.now())
-                    .student(s)
-                    .build();
-
-            // book2
-            Book b2 = Book.builder()
-                    .bookName("Think and Grow Rich")
-                    .createAt(LocalDateTime.now().minusDays(3))
-                    .student(s)
-                    .build();
-
-            // book3
-            Book b3 = Book.builder()
-                    .bookName("Spring Data JPA")
-                    .createAt(LocalDateTime.now().minusYears(1))
-                    .student(s)
-                    .build();
-
-            s.setBooks(List.of(b1, b2, b3));
-
-            s.setStudentIdCard(StudentIdCard.builder()
-                    .cardNumber("888888888")
-                    .student(s)
-                    .build());
-
-            studentRepository.save(
-                    s
-            );
-
-            bookRepository.save(
-                    Book.builder()
-                            .bookName("YUN")
-                            .createAt(LocalDateTime.now())
-                            .student(
-                                    Student.builder()
-                                            .firstName("Yun")
-                                            .lastName("Myeonghun")
-                                            .email("yun.myeonghun@gmail.com")
-                                            .age(40)
-                                            .build()
-                            )
-                            .build()
-            );
-
-            studentRepository
-                    .findAll()
-                    .forEach(
-                            student -> {
-                                student.getBooks().forEach(book -> {
-                                    System.out.println(student.getFirstName() + " -- " + book.getBookName());
-                                });
-                            }
-                    );
-
+            ManyToManyAction(studentRepository);
         };
+    }
+
+    private void ManyToManyAction(StudentRepository studentRepository) {
+        Faker faker = new Faker();
+
+        String firstName = faker.name().firstName();
+        String lastName = faker.name().lastName();
+        String email = String.format("%s.%s@amigoscode.edu", firstName, lastName);
+        Integer age = faker.number().numberBetween(17, 55);
+
+        Student s = Student.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email)
+                .age(age)
+                .build();
+
+        // book1
+        Book b1 = Book.builder()
+                .name("Clean Code")
+                .createAt(LocalDateTime.now())
+                .student(s)
+                .build();
+
+        // book2
+        Book b2 = Book.builder()
+                .name("Think and Grow Rich")
+                .createAt(LocalDateTime.now().minusDays(3))
+                .student(s)
+                .build();
+
+        // book3
+        Book b3 = Book.builder()
+                .name("Spring Data JPA")
+                .createAt(LocalDateTime.now().minusYears(1))
+                .student(s)
+                .build();
+
+        s.setBooks(List.of(b1, b2, b3));
+
+        s.setStudentIdCard(StudentIdCard.builder()
+                .cardNumber("777777777")
+                .student(s)
+                .build());
+
+        // enrolment1
+        s.addEnrolment(
+                Enrolment.builder()
+                        .id(EnrolmentId.builder()
+                                .studentId(1L)
+                                .courseId(1L)
+                                .build())
+                        .student(s)
+                        .course(Course.builder()
+                                .name("C++")
+                                .department("IT")
+                                .build())
+                        .createAt(LocalDateTime.now())
+                        .build());
+
+        // enrolment2
+        s.addEnrolment(
+                Enrolment.builder()
+                        .id(EnrolmentId.builder()
+                                .studentId(1L)
+                                .courseId(2L)
+                                .build())
+                        .student(s)
+                        .course(
+                                Course.builder()
+                                        .name("Java")
+                                        .department("IT")
+                                        .build())
+                        .createAt(LocalDateTime.now().minusDays(18))
+                        .build());
+
+        studentRepository.save(
+                s
+        );
+    }
+
+    private void OneToManyAction(StudentRepository studentRepository, BookRepository bookRepository) {
+        Faker faker = new Faker();
+
+        String firstName = faker.name().firstName();
+        String lastName = faker.name().lastName();
+        String email = String.format("%s.%s@amigoscode.edu", firstName, lastName);
+        Integer age = faker.number().numberBetween(17, 55);
+
+        Student s = Student.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email)
+                .age(age)
+                .build();
+
+        // book1
+        Book b1 = Book.builder()
+                .name("Clean Code")
+                .createAt(LocalDateTime.now())
+                .student(s)
+                .build();
+
+        // book2
+        Book b2 = Book.builder()
+                .name("Think and Grow Rich")
+                .createAt(LocalDateTime.now().minusDays(3))
+                .student(s)
+                .build();
+
+        // book3
+        Book b3 = Book.builder()
+                .name("Spring Data JPA")
+                .createAt(LocalDateTime.now().minusYears(1))
+                .student(s)
+                .build();
+
+        s.setBooks(List.of(b1, b2, b3));
+
+        s.setStudentIdCard(StudentIdCard.builder()
+                .cardNumber("888888888")
+                .student(s)
+                .build());
+
+        studentRepository.save(
+                s
+        );
+
+        bookRepository.save(
+                Book.builder()
+                        .name("YUN")
+                        .createAt(LocalDateTime.now())
+                        .student(
+                                Student.builder()
+                                        .firstName("Yun")
+                                        .lastName("Myeonghun")
+                                        .email("yun.myeonghun@gmail.com")
+                                        .age(40)
+                                        .build()
+                        )
+                        .build()
+        );
+
+        studentRepository
+                .findAll()
+                .forEach(
+                        student -> {
+                            student.getBooks().forEach(book -> {
+                                System.out.println(student.getFirstName() + " -- " + book.getName());
+                            });
+                        }
+                );
     }
 
     private void OneToOneAction(StudentRepository studentRepository, StudentIdCardRepository cardRepository) {

@@ -32,11 +32,11 @@ public class Book {
     private Long id;
 
     @Column(
-            name = "book_name",
+            name = "name",
             columnDefinition = "TEXT",
             nullable = false
     )
-    private String bookName;
+    private String name;
 
     @Column(
             name = "created_at",

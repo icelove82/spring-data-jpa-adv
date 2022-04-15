@@ -2,9 +2,12 @@ package com.example.springdatajpaadv.student;
 
 import com.example.springdatajpaadv.book.Book;
 import com.example.springdatajpaadv.card.StudentIdCard;
+import com.example.springdatajpaadv.course.Course;
+import com.example.springdatajpaadv.enrolment.Enrolment;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -85,4 +88,25 @@ public class Student {
             fetch = FetchType.EAGER
     )
     private List<Book> books;
+
+    @OneToMany(
+            mappedBy = "student",
+            cascade = CascadeType.ALL
+            /* LAZY - default type */
+    )
+    @ToString.Exclude
+    private List<Enrolment> enrolments;
+    /* Relationship m:m */
+
+    public void addEnrolment(Enrolment enrollment) {
+        if (enrolments == null)
+            enrolments = new ArrayList<>();
+
+        if (!enrolments.contains(enrollment))
+            enrolments.add(enrollment);
+    }
+
+    public void removeEnrolment(Enrolment enrolment) {
+        enrolments.remove(enrolment);
+    }
 }

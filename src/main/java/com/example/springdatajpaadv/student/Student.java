@@ -89,6 +89,7 @@ public class Student {
     )
     private List<Book> books;
 
+    /* BiDirection relationship m:m */
     @OneToMany(
             mappedBy = "student",
             cascade = CascadeType.ALL
@@ -96,7 +97,6 @@ public class Student {
     )
     @ToString.Exclude
     private List<Enrolment> enrolments;
-    /* Relationship m:m */
 
     public void addEnrolment(Enrolment enrollment) {
         if (enrolments == null)

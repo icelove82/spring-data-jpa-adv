@@ -50,6 +50,9 @@ public class SpringDataJpaAdvApplication {
             // 4
             OneToManyAction(studentRepository, bookRepository);
 
+            // 5
+            ManyToManyAction(studentRepository);
+
             */
 
             ManyToManyAction(studentRepository);

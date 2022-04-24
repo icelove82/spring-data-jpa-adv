@@ -1,5 +1,6 @@
 package com.example.springdatajpaadv;
 
+import com.example.springdatajpaadv.Yun.YunRepository;
 import com.example.springdatajpaadv.book.Book;
 import com.example.springdatajpaadv.book.BookRepository;
 import com.example.springdatajpaadv.card.StudentIdCard;
@@ -32,7 +33,8 @@ public class SpringDataJpaAdvApplication {
     CommandLineRunner commandLineRunner(
             StudentRepository studentRepository,
             StudentIdCardRepository cardRepository,
-            BookRepository bookRepository) {
+            BookRepository bookRepository,
+            YunRepository yunRepository) {
 
         return args -> {
 
@@ -56,6 +58,10 @@ public class SpringDataJpaAdvApplication {
             */
 
             ManyToManyAction(studentRepository);
+
+            yunRepository.findYun()
+                    .forEach(System.out::println);
+
         };
     }
 

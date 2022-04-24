@@ -2,7 +2,6 @@ package com.example.springdatajpaadv.student;
 
 import com.example.springdatajpaadv.book.Book;
 import com.example.springdatajpaadv.card.StudentIdCard;
-import com.example.springdatajpaadv.course.Course;
 import com.example.springdatajpaadv.enrolment.Enrolment;
 import lombok.*;
 
